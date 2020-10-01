@@ -1,3 +1,11 @@
+#[macro_use]
+pub mod config;
+
+use client::networking;
+use log::*;
+
 fn main() {
-    println!("Hello, world!");
+    config::Config::from_env();
+    networking::get_swifty();
+    info!("run end");
 }
