@@ -1,11 +1,13 @@
+#![allow(unused_variables)]
+
 #[macro_use]
+
 pub mod config;
 
-use client::networking;
 use log::*;
 
 fn main() {
-    config::Config::from_env();
-    networking::get_swifty();
-    info!("run end");
+    let _conf = config::Config::from_env();
+
+    info!("adar");
 }
