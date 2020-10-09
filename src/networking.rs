@@ -1,9 +1,9 @@
-#![allow(unused_imports, dead_code)]
+#![allow(dead_code)]
 
 use crate::error::Error;
 use log::*;
 use std::io::prelude::*;
-use std::net::{Ipv4Addr, Ipv6Addr, SocketAddr, TcpStream, ToSocketAddrs};
+use std::net::{SocketAddr, TcpStream, ToSocketAddrs};
 use std::time::Duration;
 
 const TIME_OUT: std::time::Duration = Duration::from_secs(5);
@@ -19,7 +19,7 @@ pub fn get_ip_address(url: String, port: u16) -> Result<Vec<SocketAddr>, Error> 
             }
             return Ok(vec_of_add);
         }
-        Err(_) => return Err(Error::ParsingUrl((url, port))),
+        Err(_) => return Err(Error::GetIpFromAddrs((url, port))),
     }
 }
 
@@ -29,7 +29,7 @@ pub fn open_connection(address: &SocketAddr) -> Result<TcpStream, Error> {
     match stream {
         Ok(st) => Ok(st),
         Err(_) => {
-            warn!("connection to {}:{} failed", address.ip(), address.port());
+            info!("connection to {}:{} failed", address.ip(), address.port());
             Err(Error::ConnectToServer((
                 address.ip().to_string(),
                 address.port(),
@@ -71,7 +71,9 @@ pub fn read_from_stream(stream: &mut TcpStream ) ->  Result<Vec<u8>, Error>
 
 
 mod tests {
+    #![allow(unused_imports)]
     use super::*;
+    use std::net::{Ipv4Addr};
 
     #[test]
     fn test_get_ip_address_valid() {
@@ -86,7 +88,7 @@ mod tests {
         match r {
             Ok(_) => unreachable!(),
             Err(err) => {
-                let costume_err = Error::ParsingUrl(("gopher.claub".to_string(), 60));
+                let costume_err = Error::GetIpFromAddrs(("gopher.claub".to_string(), 60));
                 assert_eq!(err, costume_err);
             }
         }
@@ -106,7 +108,7 @@ mod tests {
         match r {
             Ok(_) => unreachable!(),
             Err(err) => {
-                let costume_err = Error::ParsingUrl(("gopher.club/1".to_string(), 60));
+                let costume_err = Error::GetIpFromAddrs(("gopher.club/1".to_string(), 60));
                 assert_eq!(err, costume_err);
             }
         }
